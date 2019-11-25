@@ -61,7 +61,7 @@ for (i = 0; i < 4; i++) {
 function init() {
     run = setInterval(function () {
         draw();
-    }, 1000 / 50)
+    }, 1000 / 20)
 }
 
 /**
@@ -95,6 +95,7 @@ function enemyDie() {
                     if (peluru[i].y == enemy[j].y + 10) {
                         // Jika musuh terkena tembakan
                         enemy[j].die = true;
+                        peluru[i].y = -10;
                         score += 10;
                     }
                 }
@@ -156,22 +157,21 @@ function drawEnemy() {
             }
         }
     } else {
+        let is_true = true;
         for (i = 0; i < enemy.length; i++) {
             if (enemy[i].die == false) {
                 ctx.drawImage(imgEnemy, 0, 0, 50, 38, enemy[i].x, enemy[i].y, 50 / 4, 38 / 4);
-                enemy[i].y += 1
+                enemy[i].y += 1;
                 if (enemy[i].y > batasBawah + 20) {
-                    lives -= 1;
-                    enemy[i].y = -10
+                    if (is_true == true){
+                        lives -= 1;
+                        is_true = false;
+                    }
+                    enemy[i].y = -10;
                 }
             }
         }
     }
-    // console.log("x: "+enemy[0].x+" - "+(enemy[0].x+50/4)+" \ny: "+enemy[0].y)
-    // enemy[i].die = true;
-    // enemy[1].die = true;
-    // enemy[2].die = true;
-    // enemy[3].die = true;
 }
 
 /**
@@ -266,6 +266,105 @@ btnMulai.addEventListener('click', function () {
                 }
                 break;
             default:
+                break;
+        }
+    })
+})
+
+btnUlangi.addEventListener('click', function () {
+    // Re-Declare for restart game
+    lives = 10,
+        score = 0;
+    bannerAkhir[0].style.display = "none";
+    let batasKiri = 10,
+        batasKanan = 280,
+        batasAtas = 0,
+        batasBawah = 130;
+    let ship = {
+        x: batasKanan / 2,
+        y: batasBawah
+    }
+    let peluru = [],
+        enemy = [];
+    for (i = 0; i < 4; i++) {
+        enemy[i] = {
+            x: 20 + i * 80,
+            y: -10,
+            die: false,
+            score: true
+        }
+    }
+    for (i = 0; i < 4; i++) {
+        peluru[i] = {
+            x: ship.x + 5,
+            y: ship.y + 5,
+            status: 'ready',
+            baca: false
+        }
+    }
+    init();
+    document.addEventListener('keydown', function (anu) {
+        switch (anu.code) {
+            case "Space":
+                if (peluru[0].status == 'ready') {
+                    laserEffect.play()
+                    peluru[0].status = 'used';
+                } else if (peluru[1].status == 'ready') {
+                    laserEffect.play()
+                    peluru[1].status = 'used';
+                } else if (peluru[2].status == 'ready') {
+                    laserEffect.play()
+                    peluru[2].status = 'used';
+                } else if (peluru[3].status == 'ready') {
+                    laserEffect.play()
+                    peluru[3].status = 'used';
+                } else {
+                    reload();
+                }
+                break;
+            case "ArrowRight":
+                if (ship.x < batasKanan) {
+                    ship.x += 10;
+                }
+                for (var i = 0; i < peluru.length; i++) {
+                    if (peluru[i].status !== "used") {
+                        if (peluru[i].x <= batasKanan)
+                            peluru[i].x += 10;
+                    }
+                }
+                break;
+            case "ArrowLeft":
+                if (ship.x > batasKiri) {
+                    ship.x -= 10;
+                }
+                for (var i = 0; i < peluru.length; i++) {
+                    if (peluru[i].status !== "used") {
+                        if (peluru[i].x >= batasKiri + 10)
+                            peluru[i].x -= 10;
+                    }
+                }
+                break;
+            case "ArrowUp":
+                if (ship.y > batasAtas) {
+                    ship.y -= 10;
+                }
+                for (var i = 0; i < peluru.length; i++) {
+                    if (peluru[i].status !== "used") {
+                        if (peluru[i].y > batasAtas + 10)
+                            peluru[i].y -= 10;
+                    }
+                }
+                break;
+            case "ArrowDown":
+                if (ship.y < batasBawah) {
+                    ship.y += 10;
+                }
+                for (var i = 0; i < peluru.length; i++) {
+                    if (peluru[i].status !== "used") {
+                        if (peluru[i].y < batasBawah)
+                            peluru[i].y += 10;
+                    }
+                }
                 break;
         }
     })
