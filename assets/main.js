@@ -82,6 +82,24 @@ function drawPeluru() {
     }
 }
 
+
+/**
+ * crush
+ *  function lek Pesawat nabrak musuh
+ */
+function crush(){
+    for(i=0; i < enemy.length; i++){
+        if ((enemy[i].y + 50 / 4 == ship.y || enemy[i].y == ship.y) && (ship.x >= enemy[i].x && ship.x <= enemy[i].x )) {
+            lives -= 1
+        }
+    }
+}
+
+
+
+
+
+
 /**
  * enemyDie
  * Berfungsi untuk proses menembak
@@ -163,6 +181,7 @@ function drawEnemy() {
                 ctx.drawImage(imgEnemy, 0, 0, 50, 38, enemy[i].x, enemy[i].y, 50 / 4, 38 / 4);
                 enemy[i].y += 1;
                 if (enemy[i].y > batasBawah + 20) {
+                    // jika lewat nyawa berkurang satu
                     if (is_true == true){
                         lives -= 1;
                         is_true = false;
@@ -193,6 +212,7 @@ function draw() {
     drawShip();
     enemyDie();
     drawPeluru();
+    crush();
     updateBoard();
 };
 
