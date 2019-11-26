@@ -1,8 +1,9 @@
 let btnMulai = document.getElementById('mulai'),
+    btnUlangi = document.getElementById('ulangi'),
     c = document.getElementById('canvas'),
     scoreShow = document.getElementById('score'),
     livesShow = document.getElementById('nyawa'),
-    text = document.getElementsByClassName('instruction'),
+    text = document.getElementById('text'),
     banner1 = document.getElementsByClassName('banner1'),
     banner2 = document.getElementsByClassName('banner2');
 
@@ -93,18 +94,18 @@ var drawEnemy = function () {
                 enemy[i].y += .52;
                 ctx.drawImage(imgEnemy, 0, 0, 50, 38, enemy[i].x, enemy[i].y, 50 / 4, 38 / 4);
             }
-            if(ship.y <= enemy[i].y+50/4 && ship.y >= enemy[i].y){
-                if (ship.x <= enemy[i].x + 50 / 4 && ship.x >= enemy[i].x){
+            if (ship.y <= enemy[i].y + 50 / 4 && ship.y >= enemy[i].y) {
+                if (ship.x <= enemy[i].x + 50 / 4 && ship.x >= enemy[i].x && enemy[i].status != "dead") {
                     lives -= 1;
-                    for(j=0; j<enemy.length;j++){
+                    for (j = 0; j < enemy.length; j++) {
                         enemy[j].y = -10;
                     }
                 }
             }
             // lek musuh wis ngliwati wates
-            if(enemy[i].y >= bBawah+10){
-                lives -=1;
-                for(j=0;j<enemy.length;j++){
+            if (enemy[i].y >= bBawah + 10) {
+                lives -= 1;
+                for (j = 0; j < enemy.length; j++) {
                     enemy[j].y = -10;
                 }
                 return
@@ -132,11 +133,11 @@ var drawPeluru = function () {
 }
 
 var tembak = function () {
-    for(i=0;i<peluru.length;i++){
-        for(j=0;j<enemy.length;j++){
+    for (i = 0; i < peluru.length; i++) {
+        for (j = 0; j < enemy.length; j++) {
             if (peluru[i].status === "used" && enemy[j].status == "live") {
                 if ((peluru[i].x <= enemy[j].x + 50 / 4) && (peluru[i].x >= enemy[j].x)) {
-                    if(peluru[i].y <= enemy[j].y + 38/4 && peluru[i].y >= enemy[j].y){
+                    if (peluru[i].y <= enemy[j].y + 38 / 4 && peluru[i].y >= enemy[j].y) {
                         enemy[j].status = "dead";
                         peluru[i].y = -10;
                         score += 10;
@@ -147,7 +148,7 @@ var tembak = function () {
     }
 }
 
-let update = function(){
+let update = function () {
     scoreShow.innerHTML = score;
     livesShow.innerHTML = lives;
 
@@ -185,38 +186,36 @@ function init() {
     }, 50);
 }
 
-btnMulai.addEventListener('click', function () {
-    init();
-    banner1[0].style.display = 'none';
 
+var event = function () {
     document.addEventListener('keydown', function (con) {
         switch (con.code) {
             case 'ArrowUp':
-                ship.y -= 10;
+                ship.y -= 2;
                 for (i = 0; i < 3; i++) {
                     if (peluru[i].status == "ready")
-                        peluru[i].y -= 10;
+                        peluru[i].y -= 2;
                 }
                 break;
             case 'ArrowDown':
-                ship.y += 10;
+                ship.y += 2;
                 for (i = 0; i < 3; i++) {
                     if (peluru[i].status == "ready")
-                        peluru[i].y += 10;
+                        peluru[i].y += 2;
                 }
                 break;
             case 'ArrowLeft':
-                ship.x -= 10;
+                ship.x -= 2;
                 for (i = 0; i < 3; i++) {
                     if (peluru[i].status == "ready")
-                        peluru[i].x -= 10;
+                        peluru[i].x -= 2;
                 }
                 break;
             case 'ArrowRight':
-                ship.x += 10;
+                ship.x += 2;
                 for (i = 0; i < 3; i++) {
                     if (peluru[i].status == "ready")
-                        peluru[i].x += 10;
+                        peluru[i].x += 2;
                 }
                 break;
             case 'Space':
@@ -234,4 +233,43 @@ btnMulai.addEventListener('click', function () {
         }
         console.log(con.code);
     })
+}
+
+
+btnMulai.addEventListener('click', function () {
+    init();
+    banner1[0].style.display = 'none';
+    event();
+})
+
+
+btnUlangi.addEventListener('click',function(){
+    lives = 10;
+    score = 0;
+    ship = {
+        x: bKanan / 2,
+        y: bBawah
+    }
+
+    for (i = 0; i < 5; i++) {
+        enemy[i] = {
+            x: bKiri + i * 65,
+            y: bAtas,
+            status: "live"
+        }
+    }
+
+    for (i = 0; i < 3; i++) {
+        peluru[i] = {
+            x: ship.x + 5,
+            y: ship.y + 4,
+            width: 2,
+            height: 10,
+            status: 'ready',
+            inscr: true
+        }
+    }
+    init();
+    banner2[0].style.display = 'none';
+    event();
 })
