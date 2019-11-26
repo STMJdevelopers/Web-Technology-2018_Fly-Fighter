@@ -38,7 +38,7 @@ let peluru = [],
 
 for (i = 0; i < 4; i++) {
     enemy[i] = {
-        x: 20 + i * 80,
+        x: 20 + i * 60,
         y: -10,
         die: false,
         score: true
@@ -72,12 +72,12 @@ function drawPeluru() {
     for (i = 0; i < enemy.length; i++) {
         if (peluru[i].status == "ready") {
             ctx.fillStyle = 'red';
-            ctx.fillRect(peluru[i].x, peluru[i].y, 2, 4);
+            ctx.fillRect(peluru[i].x, peluru[i].y, 2, 10);
         }
         if (peluru[i].status == "used") {
             peluru[i].y -= 1;
             ctx.fillStyle = 'red';
-            ctx.fillRect(peluru[i].x, peluru[i].y, 2, 4);
+            ctx.fillRect(peluru[i].x, peluru[i].y, 2, 10);
         }
     }
 }
@@ -91,6 +91,9 @@ function crush(){
     for(i=0; i < enemy.length; i++){
         if ((enemy[i].y + 50 / 4 == ship.y || enemy[i].y == ship.y) && (ship.x >= enemy[i].x && ship.x <= enemy[i].x )) {
             lives -= 1
+            for (i = 0; i < enemy.length; i++){
+                enemy[i].y = 0;
+            }
         }
     }
 }
@@ -114,7 +117,11 @@ function enemyDie() {
                         // Jika musuh terkena tembakan
                         enemy[j].die = true;
                         peluru[i].y = -10;
-                        score += 10;
+                        if(enemy[j].score == true){
+                            score += 10;
+                            enemy[j].y = -10
+                            enemy[j].score = false;
+                        }
                     }
                 }
             }
@@ -175,18 +182,15 @@ function drawEnemy() {
             }
         }
     } else {
-        let is_true = true;
         for (i = 0; i < enemy.length; i++) {
             if (enemy[i].die == false) {
                 ctx.drawImage(imgEnemy, 0, 0, 50, 38, enemy[i].x, enemy[i].y, 50 / 4, 38 / 4);
                 enemy[i].y += 1;
                 if (enemy[i].y > batasBawah + 20) {
                     // jika lewat nyawa berkurang satu
-                    if (is_true == true){
-                        lives -= 1;
-                        is_true = false;
-                    }
+                    lives -= 1;
                     enemy[i].y = -10;
+                    return
                 }
             }
         }
