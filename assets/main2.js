@@ -1,3 +1,6 @@
+/**
+ * Inisialisasi Variable
+ */
 let btnMulai = document.getElementById('mulai'),
     btnUlangi = document.getElementById('ulangi'),
     c = document.getElementById('canvas'),
@@ -11,25 +14,34 @@ let btnMulai = document.getElementById('mulai'),
 let score = 0;
 let lives = 10;
 
+let bAtas = 10,
+    bBawah = 130,
+    bKiri = 10,
+    bKanan = 280;
+
 let ctx = c.getContext('2d');
 
 let imgShip = new Image(),
     imgEnemy = new Image(),
     laserAudio = new Audio();
 
+imgShip.src = '/assets/ship.png';
+imgEnemy.src = '/assets/musuh.png';
+laserAudio.src = '/assets/laser.mp3';
+
 let peluru = [],
     enemy = [];
 
-let bAtas = 10,
-    bBawah = 130,
-    bKiri = 10,
-    bKanan = 280;
 
 ship = {
     x: bKanan / 2,
     y: bBawah
 }
 
+
+/**
+ * Generate Enemy
+ */
 for (i = 0; i < 5; i++) {
     enemy[i] = {
         x: bKiri + i * 65,
@@ -38,6 +50,10 @@ for (i = 0; i < 5; i++) {
     }
 }
 
+
+/**
+ * Generate Peluru
+ */
 for (i = 0; i < 3; i++) {
     peluru[i] = {
         x: ship.x + 5,
@@ -50,10 +66,9 @@ for (i = 0; i < 3; i++) {
 }
 
 
-imgShip.src = '/assets/ship.png';
-imgEnemy.src = '/assets/musuh.png';
-laserAudio.src = '/assets/laser.mp3';
-
+/**
+ * Isi ulang Peluru
+ */
 var reload = function () {
     for (i = 0; i < 3; i++) {
         peluru[i] = {
@@ -66,10 +81,19 @@ var reload = function () {
         }
     }
 }
+
+
+/**
+ * Menggambar pesawat pemain
+ */
 var drawShip = function () {
     ctx.drawImage(imgShip, 0, 0, 50, 57, ship.x, ship.y, 50 / 4, 57 / 4);
 }
 
+
+/**
+ * Menggambar pesawat musuh
+ */
 var drawEnemy = function () {
     if (enemy[0].status == "dead" &&
         enemy[1].status == "dead" &&
@@ -85,15 +109,15 @@ var drawEnemy = function () {
                 status: 'ready',
                 inscr: true
             }
-            // ctx.drawImage(imgEnemy, 0, 0, 50, 38, enemy[i].x, enemy[i].y, 50 / 4, 38 / 4);
         }
     } else {
         for (i = 0; i < enemy.length; i++) {
-            // gambar ship seng urip
+            // menggambar musuh yang masih hidup
             if (enemy[i].status == "live") {
                 enemy[i].y += .52;
                 ctx.drawImage(imgEnemy, 0, 0, 50, 38, enemy[i].x, enemy[i].y, 50 / 4, 38 / 4);
             }
+            
             if (ship.y <= enemy[i].y + 50 / 4 && ship.y >= enemy[i].y) {
                 if (ship.x <= enemy[i].x + 50 / 4 && ship.x >= enemy[i].x && enemy[i].status != "dead") {
                     lives -= 1;
@@ -102,7 +126,9 @@ var drawEnemy = function () {
                     }
                 }
             }
-            // lek musuh wis ngliwati wates
+            
+            // mengembalikan musuh keatas ,
+            // jika sudah melewati batas bawah
             if (enemy[i].y >= bBawah + 10) {
                 lives -= 1;
                 for (j = 0; j < enemy.length; j++) {
@@ -114,6 +140,10 @@ var drawEnemy = function () {
     }
 }
 
+
+/**
+ * Menggambar peluru
+ */
 var drawPeluru = function () {
     if (peluru[0].status == "expired" && peluru[1].status == "expired" && peluru[2].status == "expired") {
         reload();
@@ -122,16 +152,21 @@ var drawPeluru = function () {
             if (peluru[i].y < -10) {
                 peluru[i].status = "expired";
             }
+            
             if (peluru[i].status == "used") {
                 peluru[i].y -= 1;
             }
+            
             ctx.fillStyle = 'red';
             ctx.fillRect(peluru[i].x, peluru[i].y, peluru[i].width, peluru[i].height);
-            // console.log(peluru[i].x + " :: " + peluru[i].y)
         }
     }
 }
 
+
+/**
+ * Action menembak musuh
+ */
 var tembak = function () {
     for (i = 0; i < peluru.length; i++) {
         for (j = 0; j < enemy.length; j++) {
@@ -148,6 +183,10 @@ var tembak = function () {
     }
 }
 
+
+/**
+ * Update permainan (jumlah nyawa & Score)
+ */
 let update = function () {
     scoreShow.innerHTML = score;
     livesShow.innerHTML = lives;
@@ -164,22 +203,37 @@ let update = function () {
     }
 }
 
+
+/**
+ * Memanggil semua function yang telah
+ * dibuat , diatas
+ */
 function draw() {
     // menggambar dicanvas sekaligus aksi
     drawShip();
     drawEnemy();
     drawPeluru();
+    
     // aksi tembak
     tembak();
+    
     // update score & lives board
     update();
 }
 
+
+/**
+ * Refresh Canvas
+ */
 function load() {
     ctx.clearRect(0, 0, 600, 600);
     draw();
 }
 
+
+/**
+ * Setting Interval permainan
+ */
 function init() {
     run = setInterval(function () {
         load()
@@ -187,6 +241,9 @@ function init() {
 }
 
 
+/**
+ * Aksi Keyboard
+ */
 var event = function () {
     document.addEventListener('keydown', function (con) {
         switch (con.code) {
@@ -231,11 +288,14 @@ var event = function () {
                 }
                 break;
         }
-        console.log(con.code);
     })
 }
 
 
+/**
+ * Meng-inisialisasi permainan
+ * Ketika button mulai di click
+ */
 btnMulai.addEventListener('click', function () {
     init();
     banner1[0].style.display = 'none';
@@ -243,6 +303,10 @@ btnMulai.addEventListener('click', function () {
 })
 
 
+/**
+ * Me re-inisialisasi permainan
+ * ketika button ulangi di click
+ */
 btnUlangi.addEventListener('click',function(){
     lives = 10;
     score = 0;
