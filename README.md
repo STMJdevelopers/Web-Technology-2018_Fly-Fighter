@@ -12,6 +12,3 @@ A simple game Fly Fighter building with JS.
 | Arrow right| go to right |
 | Arrow down| go to down |
 
-## License
-
-[MIT](LICENSE) @ [Defri Indra M](https://github.com/defrindr)
